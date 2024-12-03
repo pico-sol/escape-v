@@ -34,10 +34,10 @@ async fn main() -> Result<()> {
         let usdc_balance_data = ctx.rpc.get_account_data(&Pubkey::from_str("E19zKjNZhWhvHfHao89Pk9xQ2zSr6DErGSaFnddyuY3A")?).await?;
         let balance = spl_token::state::Account::unpack_from_slice(&usdc_balance_data).unwrap().amount;
         println!("vaultka balance: {:?} USDC", balance as f64 / 1_000_000_f64);
-        let balance = if balance < 155000 {
+        let balance = if balance < 176000 {
             0
         } else {
-            balance - 155000
+            balance - 176000
         };
         let withdraw_amount = min(balance, DEPOSITED_AMOUNT);
         send_ix(ctx.clone(), withdraw_amount).await?;
