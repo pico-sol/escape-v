@@ -22,7 +22,7 @@ const RPC: &str = "https://mainnet.helius-rpc.com/?api-key=*******************";
 const ACC2 : &str = "*******************";
 // id.jsonの中に[***,***,...,***]形式の秘密鍵を貼り付ける
 const KEYPAIR_FILE: &str = "./id.json";
-// 預入れたいUSDCの数量 x 1,000,000 エラーログの"Program log: Max withdraw: ******に表示される値"
+// 預入れたUSDCの数量 x 1,000,000 エラーログの"Program log: Max withdraw: ******に表示される値"
 // わからないときはu64::MAXにしておくと、vaultkaのUSDC vaultの全額を引き出そうとするtxになります。ただし、預入残高よりvaultkaのvault内のUSDCの方が大きいとエラーになります
 const DEPOSITED_AMOUNT: u64 = u64::MAX;
 
