@@ -29,7 +29,7 @@ const DEPOSITED_AMOUNT: u64 = u64::MAX;
 #[tokio::main]
 async fn main() -> Result<()> {
     let ctx = Arc::new(init().await?);
-    // loop {
+    loop {
         // VaultkaのUSDCプールの残高を表示
         let usdc_balance_data = ctx.rpc.get_account_data(&Pubkey::from_str("E19zKjNZhWhvHfHao89Pk9xQ2zSr6DErGSaFnddyuY3A")?).await?;
         let balance = spl_token::state::Account::unpack_from_slice(&usdc_balance_data).unwrap().amount;
@@ -43,8 +43,8 @@ async fn main() -> Result<()> {
         send_ix(ctx.clone(), withdraw_amount).await?;
         //10秒待機
         tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
-    // }
-    Ok(())
+    }
+    // Ok(())
 }
 
 async fn init() -> Result<Ctx> {
