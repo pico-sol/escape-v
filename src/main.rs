@@ -49,11 +49,14 @@ async fn main() -> Result<()> {
 
 async fn init() -> Result<Ctx> {
     std::env::set_var("RUST_LOG", "info");
-    let payer = solana_sdk::signature::read_keypair_file(&*shellexpand::tilde(&KEYPAIR_FILE))
-        .expect("parse keypair file");
+    // [***,***,...,***]（数値）形式の秘密鍵をid.jsonに貼り付ける
+    let payer = solana_sdk::signature::read_keypair_file(&*shellexpand::tilde(&KEYPAIR_FILE)).expect("parse keypair file");
+    // base58型(文字列)の秘密鍵を使う場合は53行目をコメントアウトし55-56行目を有効にしてください。id.jsonファイルの編集は不要です
+    // let secret_key = "*************";
+    // let payer = Keypair::from_base58_string(secret_key);
     let rpc = RpcClient::new_with_commitment(
         RPC.to_string(),
-        CommitmentConfig::finalized(),
+        CommitmentConfig::confirmed(),
     );
     Ok(
         Ctx {

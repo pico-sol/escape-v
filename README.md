@@ -3,10 +3,12 @@
 プロジェクトvに預け入れたUSDCを引き出すtxを10秒毎に繰り返すRustプログラムです
 
 mainの20-27行目とid.jsonの中身を設定して使用してください
+[***,***,...***](数値配列)型の秘密鍵を使うことを前提としています
+base54(文字列型)の秘密鍵を使いたい場合はinit関数を編集してください
 
 以下のような表示が繰り返すのは正常な状態です
 
-vaultka balance: 0.0 USDC
+vaultka balance: 0.01 USDC
 acc1: EYTN9eRR4y4zN2yCR9L8cWvvbWbGTSuNrRT1ixMf6wND
 acc2: CfkxTsptuC7eWT4Hbs9o6QxN4cViaM9HUf3HxcCtPxPt
 acc3: F2kJ9Mx6d7KkJogbLeJC7ir4td2heyDPa7qvY3kzyqpa
