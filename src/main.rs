@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::str::FromStr;
 use solana_sdk::{
     instruction::{AccountMeta, Instruction},
@@ -10,11 +10,11 @@ use solana_sdk::{
 use solana_client::nonblocking::rpc_client::RpcClient;
 use spl_associated_token_account::get_associated_token_address;
 use std::cmp::min;
+use solana_sdk::program_pack::Pack;
 
 struct Ctx {
     rpc: RpcClient,
     payer: Keypair,
-    skip_preflight: Arc<RwLock<bool>>,
 }
 // ご自身のRPCエンドポイントを入力
 const RPC: &str = "https://mainnet.helius-rpc.com/?api-key=*******************";
@@ -29,17 +29,22 @@ const DEPOSITED_AMOUNT: u64 = u64::MAX;
 #[tokio::main]
 async fn main() -> Result<()> {
     let ctx = Arc::new(init().await?);
-    loop {
+    // loop {
         // VaultkaのUSDCプールの残高を表示
-        let balance_with_rent = ctx.rpc.get_balance(&Pubkey::from_str("E19zKjNZhWhvHfHao89Pk9xQ2zSr6DErGSaFnddyuY3A")?).await?;
-        let balance = balance_with_rent - 2039280;
-        println!("vaultka balance: {:?} USDC", balance as f64 / 1_000_000_000_f64);
+        let usdc_balance_data = ctx.rpc.get_account_data(&Pubkey::from_str("E19zKjNZhWhvHfHao89Pk9xQ2zSr6DErGSaFnddyuY3A")?).await?;
+        let balance = spl_token::state::Account::unpack_from_slice(&usdc_balance_data).unwrap().amount;
+        let balance = if balance < 103562 {
+            0
+        } else {
+            balance - 103562
+        };
+        println!("vaultka balance: {:?} USDC", balance as f64 / 1_000_000_f64);
         let withdraw_amount = min(balance, DEPOSITED_AMOUNT);
         send_ix(ctx.clone(), withdraw_amount).await?;
         //10秒待機
         tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
-    }
-    // Ok(())
+    // }
+    Ok(())
 }
 
 async fn init() -> Result<Ctx> {
@@ -54,7 +59,6 @@ async fn init() -> Result<Ctx> {
         Ctx {
         rpc,
         payer,
-        skip_preflight: Arc::new(RwLock::new(false)),
         }
     )
 }
@@ -78,8 +82,16 @@ async fn send_ix(ctx: Arc<Ctx>, balance: u64) -> Result<()> {
         &[&ctx.payer],
         blockhash,
     );
-    *ctx.skip_preflight.write().unwrap() = false;
-    match ctx.rpc.send_and_confirm_transaction_with_spinner(&tx).await {
+    let skip_preflight = false;
+    let commitment = CommitmentConfig::confirmed();
+    let config = solana_client::rpc_config::RpcSendTransactionConfig {
+        skip_preflight,
+        preflight_commitment: None,
+        encoding: None,
+        max_retries: None,
+        min_context_slot: None,
+    };
+    match ctx.rpc.send_and_confirm_transaction_with_spinner_and_config(&tx, commitment, config).await {
         Ok(sig) => {
             println!("send tx; {:?}", sig);
             // panic!("******");
@@ -108,7 +120,6 @@ fn escape_ix(ctx: Arc<Ctx>, balance: u64) -> Result<Instruction> {
     let acc9 = vault;
     let acc10 = usdc;
     let mut data = Vec::new();
-    let balance = balance;
 
     println!("acc1: {:?}", acc1);
     println!("acc2: {:?}", acc2);
