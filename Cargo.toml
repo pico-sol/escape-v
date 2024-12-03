@@ -1,0 +1,16 @@
+[package]
+name = "escape-vaultka"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.75"
+solana-sdk = "1.18.2"
+solana-client = "1.18.2"
+spl-associated-token-account = "1.0.0"
+spl-token = "4.0.0"
+tokio = { version = "1.14.1", features = ["full"] }
+log = "0.4.22"
+shellexpand = "3.1.0"
