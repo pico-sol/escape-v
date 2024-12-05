@@ -56,7 +56,7 @@ async fn init() -> Result<Ctx> {
     // let payer = Keypair::from_base58_string(secret_key);
     let rpc = RpcClient::new_with_commitment(
         RPC.to_string(),
-        CommitmentConfig::confirmed(),
+        CommitmentConfig::finalized(),
     );
     Ok(
         Ctx {
